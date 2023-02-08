@@ -25,7 +25,13 @@
 # space = '\u0020'
 # joiners = '\u200C-\u200D'
 
-"""Basic syllable counting through tokenisation"""
+"""Basic syllable counting through tokenisation
+
+Splits text by limiters, and then separates by vowel/consonant.
+
+Irrelevant now.
+
+"""
 
 
 def hi_syllables(text):
@@ -53,6 +59,28 @@ def hi_syllables(text):
     return syllables
 
 
+"""Generates a text file of all supposed monosyllabic words from the multi-column CSV supplied"""
+
+
+def get_monosyl():
+    monosyl = set({})
+    import csv
+    with open('monosyl_complete.csv', 'r', encoding='utf8') as ph_file:
+        read = csv.reader(ph_file)
+        for row in read:
+            for i in row:
+                monosyl.add(i)
+        ph_file.close()
+
+    with open('monosyl_complete.txt', 'w', encoding='utf8') as file:
+        for i in monosyl:
+            file.write(i + '\n')
+        file.close()
+
+
+"""Reads Consonant/Vowel type assignment from the CSV database"""
+
+
 def get_cv():
     global cv_map
     import csv
@@ -65,6 +93,9 @@ def get_cv():
                 elif row[7] == '1':
                     cv_map[row[2]] = 'C'
         ph_file.close()
+
+
+"""Generates the CV structure for each word in the corpus"""
 
 
 def classify_cv():
@@ -85,20 +116,7 @@ def classify_cv():
         struct = ''
 
 
-def get_monosyl():
-    monosyl = set({})
-    import csv
-    with open('monosyl_complete.csv', 'r', encoding='utf8') as ph_file:
-        read = csv.reader(ph_file)
-        for row in read:
-            for i in row:
-                monosyl.add(i)
-        ph_file.close()
-
-    with open('monosyl_complete.txt', 'w', encoding='utf8') as file:
-        for i in monosyl:
-            file.write(i + '\n')
-        file.close()
+"""Writes all the classified structures into their respective text files"""
 
 
 def sort_write_cv():
@@ -110,20 +128,10 @@ def sort_write_cv():
         file.close()
 
 
-cv_map = {}
-struct_map = {}
-get_cv()
-classify_cv()
-sort_write_cv()
-
-# map = []
-#
-# for i in struct_map:
-#     map.append((i, len(struct_map[i])))
-# map.sort()
-#
-# for i in map:
-#     print(i[0], i[1])
-
-# get_monosyl()
-# print(hi_syllables('कैसी'))
+if __name__ == "__main__":
+    cv_map = {}
+    struct_map = {}
+    # get_monosyl()
+    get_cv()
+    classify_cv()
+    sort_write_cv()
