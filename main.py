@@ -103,9 +103,7 @@ def classify_cv():
     struct = ''
     monosyl = open('monosyl_complete.txt', 'r', encoding='utf8')
     for word in monosyl:
-        # if 'ं' in word:
-        #     struct_map['bindu'].append(word)
-        # else:
+        word += ' '
         for char in word:
             if char in cv_map.keys():
                 struct += cv_map[char]
