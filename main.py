@@ -93,6 +93,7 @@ def get_cv():
                 elif row[7] == '1':
                     cv_map[row[2]] = 'C'
         ph_file.close()
+    cv_map[' '] = ' '
 
 
 """Generates the CV structure for each word in the corpus"""
@@ -104,9 +105,15 @@ def classify_cv():
     monosyl = open('monosyl_complete.txt', 'r', encoding='utf8')
     for word in monosyl:
         word += ' '
-        for char in word:
-            if char in cv_map.keys():
-                struct += cv_map[char]
+        for i in range(len(word) - 1):
+            curr_char = word[i]
+            next_char = word[i + 1]
+            if curr_char in cv_map.keys():
+                struct += cv_map[curr_char]
+                if next_char in cv_map.keys():
+                    if cv_map[next_char] != 'V' and next_char != '्':
+                        struct += 'V'
+            # print(curr_char, next_char, struct)
         if struct in struct_map.keys():
             struct_map[struct].append(word)
         else:
@@ -129,7 +136,7 @@ def sort_write_cv():
 if __name__ == "__main__":
     cv_map = {}
     struct_map = {}
-    # get_monosyl()
+    get_monosyl()
     get_cv()
     classify_cv()
     sort_write_cv()
