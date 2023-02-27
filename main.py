@@ -96,29 +96,39 @@ def get_cv():
     cv_map[' '] = ' '
 
 
-"""Generates the CV structure for each word in the corpus"""
+"""Generates the CV structure for each word in the corpus / or a single custom word supplied"""
 
 
-def classify_cv():
+def call_classify_cv(custom_word=''):
+    if custom_word != '':
+        classify_cv(custom_word)
+    else:
+        monosyl = open('monosyl_complete.txt', 'r', encoding='utf8')
+        for word in monosyl:
+            word += ' '
+            struct = classify_cv(word)
+            if struct in struct_map.keys():
+                struct_map[struct].append(word)
+            else:
+                struct_map[struct] = [word]
+            struct = ''
+
+
+"""Generates the CV structure the given word"""
+
+
+def classify_cv(word):
     global cv_map
     struct = ''
-    monosyl = open('monosyl_complete.txt', 'r', encoding='utf8')
-    for word in monosyl:
-        word += ' '
-        for i in range(len(word) - 1):
-            curr_char = word[i]
-            next_char = word[i + 1]
-            if curr_char in cv_map.keys():
-                struct += cv_map[curr_char]
-                if next_char in cv_map.keys():
-                    if cv_map[next_char] != 'V' and next_char != '्':
-                        struct += 'V'
-            # print(curr_char, next_char, struct)
-        if struct in struct_map.keys():
-            struct_map[struct].append(word)
-        else:
-            struct_map[struct] = [word]
-        struct = ''
+    for i in range(len(word) - 1):
+        curr_char = word[i]
+        next_char = word[i + 1]
+        if curr_char in cv_map.keys():
+            struct += cv_map[curr_char]
+            if next_char in cv_map.keys():
+                if cv_map[next_char] != 'V' and next_char != '्':
+                    struct += 'V'
+    return struct
 
 
 """Writes all the classified structures into their respective text files"""
@@ -127,6 +137,7 @@ def classify_cv():
 def sort_write_cv():
     global struct_map
     for struct in struct_map.keys():
+        print(f'Writing {struct}')
         file = open('mapped/' + struct + '.txt', 'w', encoding='utf8')
         for word in struct_map[struct]:
             file.write(word)
@@ -138,5 +149,5 @@ if __name__ == "__main__":
     struct_map = {}
     get_monosyl()
     get_cv()
-    classify_cv()
+    call_classify_cv()
     sort_write_cv()
