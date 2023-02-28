@@ -72,8 +72,9 @@ def get_monosyl():
                 monosyl.add(i)
         ph_file.close()
 
+    monosyl_sorted = sorted(monosyl)
     with open('monosyl_complete.txt', 'w', encoding='utf8') as file:
-        for i in monosyl:
+        for i in monosyl_sorted:
             file.write(i + '\n')
         file.close()
 
@@ -101,17 +102,15 @@ def get_cv():
 
 def call_classify_cv(custom_word=''):
     if custom_word != '':
-        classify_cv(custom_word)
+        print(classify_cv(custom_word))
     else:
         monosyl = open('monosyl_complete.txt', 'r', encoding='utf8')
         for word in monosyl:
-            word += ' '
-            struct = classify_cv(word)
+            struct = classify_cv(word[:-1])
             if struct in struct_map.keys():
                 struct_map[struct].append(word)
             else:
                 struct_map[struct] = [word]
-            struct = ''
 
 
 """Generates the CV structure the given word"""
@@ -120,14 +119,24 @@ def call_classify_cv(custom_word=''):
 def classify_cv(word):
     global cv_map
     struct = ''
+    word += ' '
     for i in range(len(word) - 1):
         curr_char = word[i]
         next_char = word[i + 1]
+        print(curr_char, end=' ')
         if curr_char in cv_map.keys():
-            struct += cv_map[curr_char]
+            ident = cv_map[curr_char]
+            print(ident, end=' ')
+            struct += ident
             if next_char in cv_map.keys():
-                if cv_map[next_char] != 'V' and next_char != '्':
+                if cv_map[curr_char] != 'V' and cv_map[next_char] != 'V' and next_char != '्' \
+                        and next_char != ' ' or len(word) == 2:
+                    print('V', end=' ')
                     struct += 'V'
+            if next_char == '़':
+                print('V', end=' ')
+                struct += 'V'
+        print()
     return struct
 
 
@@ -135,13 +144,40 @@ def classify_cv(word):
 
 
 def sort_write_cv():
+    import glob
+    import os
+
     global struct_map
+    if len(struct_map) == 0:
+        return
+    files = glob.glob('mapped/*')
+    for f in files:
+        os.remove(f)
     for struct in struct_map.keys():
-        print(f'Writing {struct}')
+        # print(f'Writing {struct}')
         file = open('mapped/' + struct + '.txt', 'w', encoding='utf8')
         for word in struct_map[struct]:
             file.write(word)
         file.close()
+
+
+"""Prints out the structure-wise distribution of the corpus"""
+
+
+def struct_stats():
+    global struct_map
+    if len(struct_map) == 0:
+        return
+    total_elems = 0
+    count = 1
+    keys = sorted(struct_map.keys())
+    file = open('mapped/stats.txt', 'w')
+    for struct in keys:
+        elems = len(struct_map[struct])
+        total_elems += elems
+        print(f"{str(count) + '.':<4}{struct:<8}{elems:<4}", file=file)
+        count += 1
+    print(f"{'Total':<12}{total_elems:<4}", file=file)
 
 
 if __name__ == "__main__":
@@ -150,4 +186,6 @@ if __name__ == "__main__":
     get_monosyl()
     get_cv()
     call_classify_cv()
+    # call_classify_cv('नृत्य')
     sort_write_cv()
+    struct_stats()
