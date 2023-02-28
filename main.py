@@ -123,20 +123,20 @@ def classify_cv(word):
     for i in range(len(word) - 1):
         curr_char = word[i]
         next_char = word[i + 1]
-        print(curr_char, end=' ')
+        # print(curr_char, end=' ')
         if curr_char in cv_map.keys():
             ident = cv_map[curr_char]
-            print(ident, end=' ')
+            # print(ident, end=' ')
             struct += ident
             if next_char in cv_map.keys():
                 if cv_map[curr_char] != 'V' and cv_map[next_char] != 'V' and next_char != '्' \
                         and next_char != ' ' or len(word) == 2:
-                    print('V', end=' ')
+                    # print('V', end=' ')
                     struct += 'V'
             if next_char == '़':
-                print('V', end=' ')
+                # print('V', end=' ')
                 struct += 'V'
-        print()
+        # print()
     return struct
 
 
