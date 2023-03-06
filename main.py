@@ -129,13 +129,15 @@ def classify_cv(word):
             # print(ident, end=' ')
             struct += ident
             if next_char in cv_map.keys():
-                if cv_map[curr_char] != 'V' and cv_map[next_char] != 'V' and next_char != '्' \
-                        and next_char != ' ' or len(word) == 2:
+                if cv_map[curr_char] != 'V' and cv_map[next_char] != 'V' and next_char != '्' and next_char != ' ':
                     # print('V', end=' ')
                     struct += 'V'
-            if next_char == '़':
-                # print('V', end=' ')
-                struct += 'V'
+                if len(word) == 2 and cv_map[curr_char] != 'V':
+                    # print('V', end=' ')
+                    struct += 'V'
+            # if next_char == '़':
+            #     print('V', end=' ')
+            #     struct += 'V'
         # print()
     return struct
 
@@ -186,6 +188,6 @@ if __name__ == "__main__":
     get_monosyl()
     get_cv()
     call_classify_cv()
-    # call_classify_cv('नृत्य')
+    # call_classify_cv('मुफ़्त')
     sort_write_cv()
     struct_stats()
