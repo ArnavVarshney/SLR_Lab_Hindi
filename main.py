@@ -22,17 +22,22 @@ class Akshara:
 
 
 class Word:
+    original_word = ''
+    tokenized = []
     word = ''
     struct = ''
     length = 0
 
     def __init__(self, word: str):
+        self.original_word = word
         self.word = word
         self.clean()
-        self.length = len(word) - 1
+        self.tokenized = self.tokenize()
+        self.length = len(self.tokenized)
 
     def __str__(self) -> str:
-        return f'{self.word:<15} {self.struct:<10}'
+        return f'{self.original_word[:-1]:<10} {self.tokenized.__str__():<30} ' \
+               f'{self.word:<9} {self.length:<8} {self.struct:<11}'
 
     def clean(self):
         global aksharas
@@ -45,29 +50,31 @@ class Word:
     def structify(self, debug: bool = False):
         global aksharas
         temp_word = self.word + ' '
-        for i in range(self.length - 1):
+        for i in range(self.length):
             curr_char = aksharas[temp_word[i]]
             next_char = aksharas[temp_word[i + 1]]
+            self.struct += curr_char.type
             print(curr_char.char + ' ' if debug else '', end='')
             print(curr_char.type + ' ' if debug else '', end='')
-            self.struct += curr_char.type
 
-            if curr_char.type != 'V':
-                if next_char.type != 'V':
-                    if next_char.remark != 'halanta':
-                        if next_char.remark != 'space':
-                            print('V ' if debug else '', end='')
-                            self.struct += 'V'
+            if curr_char.remark != 'halanta':
+                if curr_char.type != 'V':
+                    if next_char.type != 'V':
+                        if next_char.remark != 'halanta':
+                            if next_char.remark != 'nukta':
+                                if next_char.remark != 'space':
+                                    print('V ' if debug else '', end='')
+                                    self.struct += 'V'
 
-                if self.length == 2:
-                    print('V ' if debug else '', end='')
-                    self.struct += 'V'
+                    if self.length == 1:
+                        print('V ' if debug else '', end='')
+                        self.struct += 'V'
 
             # if next_char == '़':
             #     print('V', end=' ')
             #     struct += 'V'
 
-            print('\n' if debug else '', end='')
+        print('\n' + self.struct + '\n' if debug else '', end='')
 
 
 class Corpus:
@@ -107,22 +114,26 @@ class Corpus:
         for each in self.words:
             each.structify()
 
-    def write_struct_files(self):
+    def write_struct_files(self, debug: bool = False):
         if len(self.words) == 0:
             return
-        files = glob.glob('mapped/*')
-        for f in files:
-            os.remove(f)
         for each in self.words:
             file = open('mapped/' + each.struct + '.txt', 'a', encoding='utf8')
-            print(each.word, file=file)
+            file.write(each.original_word)
+            file.close()
+        if debug:
+            with open('debug_mapped/output.csv', 'w', newline='', encoding='utf8') as file:
+                writer = csv.writer(file)
+                writer.writerow(['Original', 'Tokenized', 'Cleaned', 'Length', 'Structure'])
+                for each in self.words:
+                    writer.writerow([each.original_word[:-1], each.tokenized, each.word, each.length, each.struct])
             file.close()
 
     def struct_stats(self):
         if len(self.words) == 0:
             return
         files = sorted(glob.glob('mapped/*'))
-        total_elems = len(files)
+        total_elems = 0
         index = 1
         file = open('mapped/stats.txt', 'w')
         for each in files:
@@ -130,6 +141,7 @@ class Corpus:
                 for count, _ in enumerate(fp):
                     pass
             count += 1
+            total_elems += count
             print(f"{str(index) + '.':<4}{each[7:-4]:<8}{count:<4}")
             print(f"{str(index) + '.':<4}{each[7:-4]:<8}{count:<4}", file=file)
             index += 1
@@ -155,11 +167,20 @@ def read_aksharas(path: str):
                 akshara = Akshara(row[2], row[0], '', 'nukta', True)
             elif row[9] == '1':
                 akshara = Akshara(row[2], row[0], '', 'halanta', True)
-            elif row[10] == '1':
-                akshara = Akshara(row[2], row[0], '', 'anusvar', True)
+            # elif row[10] == '1':
+            #     akshara = Akshara(row[2], row[0], '', 'anusvar', True)
             if akshara:
                 aksharas.update({akshara.char: akshara})
         ph_file.close()
+
+
+def clean_mapped():
+    files = glob.glob('mapped/*')
+    for f in files:
+        os.remove(f)
+    files = glob.glob('debug_mapped/*')
+    for f in files:
+        os.remove(f)
 
 
 """Prints out the structure-wise distribution of the corpus"""
@@ -168,9 +189,15 @@ if __name__ == "__main__":
     aksharas = {' ': Akshara(' ', '0020', '', 'space', True)}
     read_aksharas('tamil_script_phonetic_data')
 
+    clean_mapped()
+
     corpus = Corpus('monosyl_complete')
     corpus.convert_csv_to_txt()
     corpus.read_corpus()
     corpus.generate_struct()
-    corpus.write_struct_files()
+    corpus.write_struct_files(debug=True)
     corpus.struct_stats()
+
+    w = Word('भाैंह')
+    w.structify(debug=True)
+    print(w)

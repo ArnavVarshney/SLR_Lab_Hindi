@@ -1,17 +1,19 @@
-1.  CV      841 
-2.  CVC     17  
-3.  CVCV    311 
-4.  CVCVC   7   
-5.  CVCVCV  33  
-6.  CVCVV   6   
-7.  CVV     414 
-8.  CVVC    1   
-9.  CVVCV   17  
-10. CVVV    4   
-11. V       60  
-12. VC      1   
-13. VCV     19  
-14. VV      20  
-15. VVC     1   
-16. VVCV    1   
-Total       16  
+1.  CCCV    3   
+2.  CCCVC   1   
+3.  CCV     12  
+4.  CCVC    69  
+5.  CCVCC   20  
+6.  CV      147 
+7.  CVC     1195
+8.  CVCC    190 
+9.  CVCCC   7   
+10. CVCCV   4   
+11. CVCV    3   
+12. CVCVC   4   
+13. CVV     2   
+14. CVVC    5   
+15. V       7   
+16. VC      84  
+17. VCC     14  
+18. VVC     3   
+Total       1770
