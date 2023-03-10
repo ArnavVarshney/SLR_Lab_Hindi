@@ -121,13 +121,13 @@ class Corpus:
             file = open('mapped/' + each.struct + '.txt', 'a', encoding='utf8')
             file.write(each.original_word)
             file.close()
-        if debug:
-            with open('debug_mapped/output.csv', 'w', newline='', encoding='utf8') as file:
-                writer = csv.writer(file)
-                writer.writerow(['Original', 'Tokenized', 'Cleaned', 'Length', 'Structure'])
-                for each in self.words:
-                    writer.writerow([each.original_word[:-1], each.tokenized, each.word, each.length, each.struct])
-            file.close()
+        # if debug:
+        #     with open('debug_mapped/output.csv', 'w', newline='', encoding='utf8') as file:
+        #         writer = csv.writer(file)
+        #         writer.writerow(['Original', 'Tokenized', 'Cleaned', 'Length', 'Structure'])
+        #         for each in slf.words:
+        #             writer.writerow([each.original_word[:-1], each.tokenized, each.word, each.length, each.struct])
+        #     file.close()
 
     def struct_stats(self):
         if len(self.words) == 0:
@@ -190,7 +190,6 @@ if __name__ == "__main__":
     read_aksharas('tamil_script_phonetic_data')
 
     clean_mapped()
-
     corpus = Corpus('monosyl_complete')
     corpus.convert_csv_to_txt()
     corpus.read_corpus()
@@ -198,6 +197,6 @@ if __name__ == "__main__":
     corpus.write_struct_files(debug=True)
     corpus.struct_stats()
 
-    w = Word('भाैंह')
-    w.structify(debug=True)
-    print(w)
+    # w = Word('हेै')
+    # w.structify(debug=True)
+    # print(w)
