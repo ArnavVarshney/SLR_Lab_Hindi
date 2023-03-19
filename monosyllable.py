@@ -153,7 +153,8 @@ class Corpus:
 """Reads Consonant/Vowel type assignment from the CSV database"""
 
 
-def read_aksharas(path: str, aksharas: dict):
+def read_aksharas(path: str):
+    aksharas = {' ': Akshara(' ', '0020', '', 'space', True)}
     with open(path + '.csv', 'r', encoding='utf8') as ph_file:
         read = csv.reader(ph_file)
         for row in read:
@@ -186,7 +187,7 @@ def clean_mapped():
 """Prints out the structure-wise distribution of the corpus"""
 
 if __name__ == "__main__":
-    aksharas = read_aksharas('tamil_script_phonetic_data', {' ': Akshara(' ', '0020', '', 'space', True)})
+    aksharas = read_aksharas('tamil_script_phonetic_data')
 
     clean_mapped()
     corpus = Corpus('monosyl_complete')
