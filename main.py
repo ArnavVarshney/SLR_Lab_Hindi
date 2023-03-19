@@ -197,6 +197,6 @@ if __name__ == "__main__":
     corpus.write_struct_files(debug=True)
     corpus.struct_stats()
 
-    # w = Word('हेै')
+    # w = Word('निःसंदेह')
     # w.structify(debug=True)
     # print(w)
