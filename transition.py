@@ -5,7 +5,8 @@ class Text:
     text_string = ""
     cleaned_text_string = ""
     length = 0
-    transition_map = {}
+    first_transition_map = {}
+    second_transition_map = {}
 
     def __init__(self, path: str):
         self.read_text(path)
@@ -24,22 +25,17 @@ class Text:
         cleaned = ''.join([c for c in self.text_string if c in aksharas.keys()])
         self.cleaned_text_string = cleaned
 
-    def count_transitions(self, text: str):
-        pointer = 0
-        while pointer < self.length - 1:
-            skip = 2
-            curr_char = self.cleaned_text_string[pointer]
-            next_char = self.cleaned_text_string[pointer + 1]
-            while next_char == '' or next_char == '':
-                if next_char == ' ':
-                    skip += 1
-            pointer += skip
-
-    def insert_in_map(self, char):
-        if char in self.transition_map:
-            self.transition_map[char] += 1
+    def insert_in_first_map(self, char):
+        if char in self.first_transition_map:
+            self.first_transition_map[char] += 1
         else:
-            self.transition_map[char] = 1
+            self.first_transition_map[char] = 1
+
+    def insert_in_second_map(self, char):
+        if char in self.second_transition_map:
+            self.second_transition_map[char] += 1
+        else:
+            self.second_transition_map[char] = 1
 
 
 def hi_syllables(word):
@@ -59,15 +55,45 @@ def hi_syllables(word):
                     syllables.append(char)
             except IndexError:
                 syllables.append(char)
-    new_syllables = []
-    for j in syllables:
-        try:
-            if aksharas[j].type == 'C':
-                new_syllables.append(j)
-                new_syllables.append('अ')
-        except KeyError:
-            new_syllables.append(j)
-    return new_syllables
+    # new_syllables = []
+    # for j in syllables:
+    #     try:
+    #         if aksharas[j].type == 'C':
+    #             new_syllables.append(j)
+    #             new_syllables.append('अ')
+    #         else:
+    #             new_syllables.append(j)
+    #     except KeyError:
+    #         new_syllables.append(j)
+    return syllables
+
+
+def count_first_order():
+    spl = text.cleaned_text_string.split(" ")
+    for i in spl:
+        syll = hi_syllables(i)
+        if len(syll) == 1:
+            text.insert_in_first_map(syll[0])
+        else:
+            for k in range(len(syll) - 1):
+                curr = syll[k]
+                next = syll[k + 1]
+                text.insert_in_first_map(curr + '|' + next)
+
+
+def count_second_order():
+    spl = text.cleaned_text_string.split(" ")
+    for i in spl:
+        syll = hi_syllables(i)
+        if len(syll) == 1:
+            text.insert_in_second_map(syll[0])
+        elif len(syll) == 2:
+            text.insert_in_second_map(syll[1])
+        for k in range(len(syll) - 2):
+            curr = syll[k]
+            next = syll[k + 1]
+            next_2 = syll[k + 2]
+            text.insert_in_second_map(curr + '|' + next_2)
 
 
 if __name__ == '__main__':
@@ -75,17 +101,6 @@ if __name__ == '__main__':
     aksharas.update({'ँ': Akshara('ँ', '901', '', 'anusvar', True)})
     aksharas.update({'ं': Akshara('ं', '902', '', 'anusvar', True)})
     text = Text('hi')
-    # print(text.cleaned_text_string)
-    spl = text.cleaned_text_string.split(" ")
-    for i in spl:
-        syll = hi_syllables(i)
-        if len(syll) == 1:
-            text.insert_in_map(syll[0])
-        else:
-            for k in range(len(syll) - 1):
-                curr = syll[k]
-                next = syll[k + 1]
-                text.insert_in_map(curr + '|' + next)
-    val = dict(sorted(text.transition_map.items(), key=lambda x: x[1], reverse=True))
+    val = dict(sorted(text.first_transition_map.items(), key=lambda x: x[1], reverse=True))
     print(val)
-    # print(hi_syllables('पुस्तक'))
+    # print(hi_syllables('उसी'))
