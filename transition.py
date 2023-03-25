@@ -178,6 +178,7 @@ def clean_non_hindi_words(hindi_path: str, string_path: str):
 
     string_words = []
     cleaned_words = []
+    removed = []
     file = open(string_path + '.txt', 'r', encoding='utf8')
     for line in file:
         for word in line.split(' '):
@@ -187,8 +188,32 @@ def clean_non_hindi_words(hindi_path: str, string_path: str):
                 with open(string_path + '_cleaned.txt', 'a', encoding='utf8') as f:
                     f.write(word.word + ' ')
                 cleaned_words.append(word.word)
+            else:
+                removed.append(word.word)
+                with open('mapped/removed.txt', 'a', encoding='utf8') as f:
+                    f.write(word.word + ' ')
     file.close()
-    print(len(string_words), len(cleaned_words))
+    print(len(string_words), len(cleaned_words), len(removed))
+
+
+def freq_analysis(path: str):
+    freq_map = {}
+    file = open(path + '.txt', 'r', encoding='utf8')
+    for line in file:
+        for word in line.split(' '):
+            if word in freq_map:
+                freq_map[word] += 1
+            else:
+                freq_map[word] = 1
+    file.close()
+    workbook = xlsxwriter.Workbook('mapped/freq_analysis.xlsx')
+    wk = workbook.add_worksheet('freq_analysis')
+    wk.write_row(0, 0, ('Word', 'Frequency'))
+    row = 1
+    for each in freq_map:
+        wk.write_row(row, 0, (each, freq_map[each]))
+        row += 1
+    workbook.close()
 
 
 if __name__ == '__main__':
@@ -198,6 +223,8 @@ if __name__ == '__main__':
 
     # convert_docx_txt('corpus_string_final'
     # clean_non_hindi_words('corpus', 'corpus_string_final')
+
+    freq_analysis('corpus_string_final')
 
     text = Text('corpus_string_final_cleaned')
     text.write_first_order()
