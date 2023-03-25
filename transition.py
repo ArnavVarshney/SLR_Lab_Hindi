@@ -85,16 +85,6 @@ def hi_syllables(word):
                     syllables.append(char)
             except IndexError:
                 syllables.append(char)
-    # new_syllables = []
-    # for j in syllables:
-    #     try:
-    #         if aksharas[j].type == 'C':
-    #             new_syllables.append(j)
-    #             new_syllables.append('अ')
-    #         else:
-    #             new_syllables.append(j)
-    #     except KeyError:
-    #         new_syllables.append(j)
     return syllables
 
 
