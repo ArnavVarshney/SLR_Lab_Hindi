@@ -1,2 +1,3 @@
 xlsxwriter
 glob2
+docx2txt

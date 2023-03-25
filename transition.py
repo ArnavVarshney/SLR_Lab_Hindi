@@ -1,3 +1,4 @@
+import docx2txt
 import xlsxwriter
 
 from monosyllable import *
@@ -103,7 +104,7 @@ def hi_syllables(word):
              u'\u094d']
     syllables = []
     for char in word:
-        if char in signs:
+        if char in signs and len(syllables) != 0:
             syllables[-1] = syllables[-1] + char
         else:
             try:
@@ -144,11 +145,18 @@ def count_second_order():
             text.insert_in_second_map((curr_char, next_char, next_next_char))
 
 
+def convert_docx_txt(path):
+    text = docx2txt.process(path + '.docx')
+    with open(path + '.txt', 'w', encoding='utf8') as f:
+        f.write(text)
+
+
 if __name__ == '__main__':
     aksharas = read_aksharas('tamil_script_phonetic_data')
     aksharas.update({'ँ': Akshara('ँ', '901', '', 'anusvar', True)})
     aksharas.update({'ं': Akshara('ं', '902', '', 'anusvar', True)})
-    text = Text('hi')
+    # convert_docx_txt('corpus_string_final')
+    text = Text('corpus_string_final')
     text.write_first_order()
     text.write_second_order()
     # print(hi_syllables('उसी'))
