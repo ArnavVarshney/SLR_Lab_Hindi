@@ -4,6 +4,21 @@ import xlsxwriter
 from monosyllable import *
 
 
+class Word:
+    original_word = ''
+    word = ''
+
+    def __init__(self, word: str):
+        self.original_word = word
+        self.word = word
+        self.clean()
+
+    def clean(self):
+        global aksharas
+        cleaned_word = ''.join([c for c in self.word if c in aksharas.keys()])
+        self.word = cleaned_word
+
+
 class Text:
     text_string = ""
     cleaned_text_string = ""
@@ -145,18 +160,47 @@ def count_second_order():
             text.insert_in_second_map((curr_char, next_char, next_next_char))
 
 
-def convert_docx_txt(path):
+def convert_docx_txt(path: str):
     text = docx2txt.process(path + '.docx')
     with open(path + '.txt', 'w', encoding='utf8') as f:
         f.write(text)
+
+
+def clean_non_hindi_words(hindi_path: str, string_path: str):
+    hindi_words = []
+    file = open(hindi_path + '.txt', 'r', encoding='utf8')
+    for line in file:
+        word = Word(line)
+        hindi_words.append(word.word)
+    file.close()
+    # print(hindi_words)
+    # print(len(hindi_words))
+
+    string_words = []
+    cleaned_words = []
+    file = open(string_path + '.txt', 'r', encoding='utf8')
+    for line in file:
+        for word in line.split(' '):
+            word = Word(word)
+            string_words.append(word.word)
+            if word.word in hindi_words:
+                with open(string_path + '_cleaned.txt', 'a', encoding='utf8') as f:
+                    f.write(word.word + ' ')
+                cleaned_words.append(word.word)
+    file.close()
+    print(len(string_words), len(cleaned_words))
 
 
 if __name__ == '__main__':
     aksharas = read_aksharas('tamil_script_phonetic_data')
     aksharas.update({'ँ': Akshara('ँ', '901', '', 'anusvar', True)})
     aksharas.update({'ं': Akshara('ं', '902', '', 'anusvar', True)})
-    # convert_docx_txt('corpus_string_final')
-    text = Text('corpus_string_final')
+
+    # convert_docx_txt('corpus_string_final'
+    # clean_non_hindi_words('corpus', 'corpus_string_final')
+
+    text = Text('corpus_string_final_cleaned')
     text.write_first_order()
     text.write_second_order()
+
     # print(hi_syllables('उसी'))
