@@ -1,3 +1,5 @@
+import xlsxwriter
+
 from monosyllable import *
 
 
@@ -6,7 +8,10 @@ class Text:
     cleaned_text_string = ""
     length = 0
     first_transition_map = {}
+    cv1_count = {}
+    total_first_order = 0
     second_transition_map = {}
+    total_second_order = 0
 
     def __init__(self, path: str):
         self.read_text(path)
@@ -30,6 +35,31 @@ class Text:
             self.first_transition_map[char] += 1
         else:
             self.first_transition_map[char] = 1
+
+    def count_cv1(self):
+        for char, nxt in self.first_transition_map.keys():
+            if char not in self.cv1_count.keys():
+                val = 0
+                for cv1, cv2 in self.first_transition_map.keys():
+                    if cv1 == char:
+                        val += self.first_transition_map[(cv1, cv2)]
+                self.cv1_count[char] = val
+
+    def write_first_order(self):
+        count_first_order()
+        self.count_cv1()
+        self.total_first_order = sum(self.first_transition_map.values())
+        self.first_transition_map = dict(sorted(self.first_transition_map.items(), key=lambda x: x[1], reverse=True))
+        workbook = xlsxwriter.Workbook('mapped/first_order.xlsx')
+        wk = workbook.add_worksheet('first_order')
+        wk.write_row(0, 0, ('CV1', 'CV2', 'Freq', 'Prob', 'CV1 | CV2'))
+        row = 1
+        for each in self.first_transition_map:
+            wk.write_row(row, 0, (each[0], each[1], self.first_transition_map[each],
+                                  self.first_transition_map[each] / self.total_first_order,
+                                  self.first_transition_map[each] / self.cv1_count[each[0]]))
+            row += 1
+        workbook.close()
 
     def insert_in_second_map(self, char):
         if char in self.second_transition_map:
@@ -71,14 +101,14 @@ def hi_syllables(word):
 def count_first_order():
     spl = text.cleaned_text_string.split(" ")
     for i in spl:
-        syll = hi_syllables(i)
-        if len(syll) == 1:
-            text.insert_in_first_map(syll[0])
+        syllablify = hi_syllables(i)
+        if len(syllablify) == 1:
+            text.insert_in_first_map((syllablify[0], ''))
         else:
-            for k in range(len(syll) - 1):
-                curr = syll[k]
-                next = syll[k + 1]
-                text.insert_in_first_map(curr + '|' + next)
+            for k in range(len(syllablify) - 1):
+                curr_char = syllablify[k]
+                next_char = syllablify[k + 1]
+                text.insert_in_first_map((curr_char, next_char))
 
 
 def count_second_order():
@@ -101,6 +131,5 @@ if __name__ == '__main__':
     aksharas.update({'ँ': Akshara('ँ', '901', '', 'anusvar', True)})
     aksharas.update({'ं': Akshara('ं', '902', '', 'anusvar', True)})
     text = Text('hi')
-    val = dict(sorted(text.first_transition_map.items(), key=lambda x: x[1], reverse=True))
-    print(val)
+    text.write_first_order()
     # print(hi_syllables('उसी'))
