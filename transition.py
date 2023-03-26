@@ -137,7 +137,8 @@ def count_first_order():
     for i in spl:
         syllablify = hi_syllables(i)
         if len(syllablify) == 1:
-            text.insert_in_first_map((syllablify[0], ''))
+            # text.insert_in_first_map((syllablify[0], ''))
+            pass
         else:
             for k in range(len(syllablify) - 1):
                 curr_char = syllablify[k]
@@ -150,14 +151,17 @@ def count_second_order():
     for i in spl:
         syllablify = hi_syllables(i)
         if len(syllablify) == 1:
-            text.insert_in_second_map((syllablify[0], '', ''))
+            # text.insert_in_second_map((syllablify[0], '', ''))
+            pass
         elif len(syllablify) == 2:
-            text.insert_in_second_map((syllablify[0], syllablify[1], ''))
-        for k in range(len(syllablify) - 2):
-            curr_char = syllablify[k]
-            next_char = syllablify[k + 1]
-            next_next_char = syllablify[k + 2]
-            text.insert_in_second_map((curr_char, next_char, next_next_char))
+            # text.insert_in_second_map((syllablify[0], syllablify[1], ''))
+            pass
+        else:
+            for k in range(len(syllablify) - 2):
+                curr_char = syllablify[k]
+                next_char = syllablify[k + 1]
+                next_next_char = syllablify[k + 2]
+                text.insert_in_second_map((curr_char, next_char, next_next_char))
 
 
 def convert_docx_txt(path: str):
