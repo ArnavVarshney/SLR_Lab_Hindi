@@ -167,12 +167,12 @@ def convert_docx_txt(path: str):
 
 
 def clean_non_hindi_words(hindi_path: str, string_path: str):
-    hindi_words = []
-    file = open(hindi_path + '.txt', 'r', encoding='utf8')
-    for line in file:
-        word = Word(line)
-        hindi_words.append(word.word)
-    file.close()
+    # hindi_words = []
+    # file = open(hindi_path + '.txt', 'r', encoding='utf8')
+    # for line in file:
+    #     word = Word(line)
+    #     hindi_words.append(word.word)
+    # file.close()
     # print(hindi_words)
     # print(len(hindi_words))
 
@@ -184,14 +184,14 @@ def clean_non_hindi_words(hindi_path: str, string_path: str):
         for word in line.split(' '):
             word = Word(word)
             string_words.append(word.word)
-            if word.word in hindi_words:
-                with open(string_path + '_cleaned.txt', 'a', encoding='utf8') as f:
-                    f.write(word.word + ' ')
-                cleaned_words.append(word.word)
-            else:
-                removed.append(word.word)
-                with open('mapped/removed.txt', 'a', encoding='utf8') as f:
-                    f.write(word.word + ' ')
+            # if word.word in hindi_words:
+            with open(string_path + '_cleaned_chars.txt', 'a', encoding='utf8') as f:
+                f.write(word.word + ' ')
+            cleaned_words.append(word.word)
+            # else:
+            #     removed.append(word.word)
+            #     with open('mapped/removed.txt', 'a', encoding='utf8') as f:
+            #         f.write(word.word + ' ')
     file.close()
     print(len(string_words), len(cleaned_words), len(removed))
 
@@ -224,9 +224,9 @@ if __name__ == '__main__':
     # convert_docx_txt('corpus_string_final'
     # clean_non_hindi_words('corpus', 'corpus_string_final')
 
-    freq_analysis('corpus_string_final')
+    # freq_analysis('corpus_string_final')
 
-    text = Text('corpus_string_final_cleaned')
+    text = Text('corpus_string_final_cleaned_chars')
     text.write_first_order()
     text.write_second_order()
 
