@@ -1,6 +1,7 @@
 import docx2txt
 import xlsxwriter
 
+from kannada import syllabify_kn
 from monosyllable import *
 
 
@@ -11,7 +12,7 @@ class Word:
     def __init__(self, word: str):
         self.original_word = word
         self.word = word
-        self.clean()
+        # self.clean()
 
     def clean(self):
         global aksharas
@@ -34,7 +35,8 @@ class Text:
 
     def __init__(self, path: str):
         self.read_text(path)
-        self.clean()
+        self.cleaned_text_string = self.text_string
+        # self.clean()
 
     def __str__(self):
         return self.cleaned_text_string
@@ -100,7 +102,7 @@ class Text:
         self.count_cv2()
         self.total_second_order = sum(self.second_transition_map.values())
         self.second_transition_map = dict(sorted(self.second_transition_map.items(), key=lambda x: x[1], reverse=True))
-        workbook = xlsxwriter.Workbook('mapped/second_order.xlsx')
+        workbook = xlsxwriter.Workbook('mapped/second_order_kn.xlsx')
         wk = workbook.add_worksheet('second_order')
         wk.write_row(0, 0, ('CV1', 'CV2', 'CV3', 'Freq', 'Prob', 'CV1 + CV2 | CV3'))
         row = 1
@@ -135,7 +137,7 @@ def hi_syllables(word):
 def count_first_order():
     spl = text.cleaned_text_string.split(" ")
     for i in spl:
-        syllablify = hi_syllables(i)
+        syllablify = syllabify_kn(i)
         if len(syllablify) == 1:
             # text.insert_in_first_map((syllablify[0], ''))
             pass
@@ -149,7 +151,7 @@ def count_first_order():
 def count_second_order():
     spl = text.cleaned_text_string.split(" ")
     for i in spl:
-        syllablify = hi_syllables(i)
+        syllablify = syllabify_kn(i)
         if len(syllablify) == 1:
             # text.insert_in_second_map((syllablify[0], '', ''))
             pass
@@ -210,7 +212,7 @@ def freq_analysis(path: str):
             else:
                 freq_map[word] = 1
     file.close()
-    workbook = xlsxwriter.Workbook('mapped/freq_analysis.xlsx')
+    workbook = xlsxwriter.Workbook('mapped/freq_analysis_kn.xlsx')
     wk = workbook.add_worksheet('freq_analysis')
     wk.write_row(0, 0, ('Word', 'Frequency'))
     row = 1
@@ -221,16 +223,16 @@ def freq_analysis(path: str):
 
 
 if __name__ == '__main__':
-    aksharas = read_aksharas('tamil_script_phonetic_data')
-    aksharas.update({'ँ': Akshara('ँ', '901', '', 'anusvar', True)})
-    aksharas.update({'ं': Akshara('ं', '902', '', 'anusvar', True)})
+    # aksharas = read_aksharas('tamil_script_phonetic_data')
+    # aksharas.update({'ँ': Akshara('ँ', '901', '', 'anusvar', True)})
+    # aksharas.update({'ं': Akshara('ं', '902', '', 'anusvar', True)})
 
     # convert_docx_txt('corpus_string_final'
     # clean_non_hindi_words('corpus', 'corpus_string_final')
 
-    # freq_analysis('corpus_string_final')
+    freq_analysis('kn_raw_string')
 
-    text = Text('corpus_string_final_cleaned_chars')
+    text = Text('kn_raw_string')
     text.write_first_order()
     text.write_second_order()
 
