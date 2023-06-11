@@ -43,7 +43,8 @@ class Text:
 
     def read_text(self, path: str):
         file = open(path + '.txt', 'r', encoding='utf8')
-        self.text_string = file.readlines()[0]
+        for line in file.readlines():
+            self.text_string += line
         file.close()
 
     def clean(self):
@@ -71,7 +72,7 @@ class Text:
         self.count_cv1()
         self.total_first_order = sum(self.first_transition_map.values())
         self.first_transition_map = dict(sorted(self.first_transition_map.items(), key=lambda x: x[1], reverse=True))
-        workbook = xlsxwriter.Workbook('mapped/first_order.xlsx')
+        workbook = xlsxwriter.Workbook('mapped/first_order_kn.xlsx')
         wk = workbook.add_worksheet('first_order')
         wk.write_row(0, 0, ('CV1', 'CV2', 'Freq', 'Prob', 'CV1 | CV2'))
         row = 1
@@ -222,6 +223,17 @@ def freq_analysis(path: str):
     workbook.close()
 
 
+def separate_kn_words():
+    text.cleaned_text_string = text.cleaned_text_string.replace("\n", " ")
+    spl = text.cleaned_text_string.split(" ")
+    total_chars = 0
+    for word in spl:
+        with open('kn_words_separated' + '.txt', 'a', encoding='utf8') as f:
+            f.write(word + '\n')
+        total_chars += len(word)
+    print(len(spl), total_chars)
+
+
 if __name__ == '__main__':
     # aksharas = read_aksharas('tamil_script_phonetic_data')
     # aksharas.update({'ँ': Akshara('ँ', '901', '', 'anusvar', True)})
@@ -235,5 +247,7 @@ if __name__ == '__main__':
     text = Text('kn_raw_string')
     text.write_first_order()
     text.write_second_order()
+
+    # separate_kn_words()
 
     # print(hi_syllables('उसी'))
