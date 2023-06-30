@@ -98,6 +98,32 @@ class Text:
                         val += self.second_transition_map[(cv1, cv2, cv3)]
                 self.cv2_count[(char, nxt)] = val
 
+    def sort_second_order(self):
+        sorted_dict = {}
+        count_second_order()
+        self.count_cv2()
+        self.second_transition_map = dict(sorted(self.second_transition_map.items(), key=lambda x: x[1], reverse=True))
+        self.total_second_order = sum(self.second_transition_map.values())
+        for pair in self.cv2_count.keys():
+            sorted_dict[pair] = []
+            for each in self.second_transition_map.keys():
+                if pair == (each[0], each[1]):
+                    if each not in sorted_dict[pair]:
+                        sorted_dict[pair].append(each)
+        workbook = xlsxwriter.Workbook('mapped/second_order_filtered_kn.xlsx')
+        wk = workbook.add_worksheet('second_order')
+        wk.write_row(0, 0, ('CV1', 'CV2', 'CV3', 'Freq', 'Prob', 'CV1 + CV2 | CV3'))
+        row = 1
+        for key in sorted_dict.keys():
+            ls = sorted_dict[key]
+            if 3 >= len(ls) > 1:
+                for each in ls:
+                    wk.write_row(row, 0, (each[0], each[1], each[2], self.second_transition_map[each],
+                                          self.second_transition_map[each] / self.total_second_order,
+                                          self.second_transition_map[each] / self.cv2_count[(each[0], each[1])]))
+                    row += 1
+        workbook.close()
+
     def write_second_order(self):
         count_second_order()
         self.count_cv2()
@@ -239,14 +265,14 @@ if __name__ == '__main__':
     # aksharas.update({'ँ': Akshara('ँ', '901', '', 'anusvar', True)})
     # aksharas.update({'ं': Akshara('ं', '902', '', 'anusvar', True)})
 
-    # convert_docx_txt('corpus_string_final'
+    # convert_docx_txt('corpus_string_final')
     # clean_non_hindi_words('corpus', 'corpus_string_final')
 
-    freq_analysis('kn_raw_string')
+    # freq_analysis('kn_raw_string')
 
     text = Text('kn_raw_string')
-    text.write_first_order()
-    text.write_second_order()
+    # text.write_first_order()
+    text.sort_second_order()
 
     # separate_kn_words()
 
