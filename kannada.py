@@ -26,4 +26,6 @@ def syllabify_kn(text):
 
     return lst_chars
 
-# print(syllabify_kn("ಅಷ್ಟೊಂದು"))
+
+if __name__ == '__main__':
+    print(syllabify_kn("ಅಷ್ಟೊಂದು"))
