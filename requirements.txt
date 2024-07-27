@@ -1,3 +1,5 @@
-xlsxwriter
+xlsxwriter~=3.2.0
 glob2
 docx2txt
+selenium~=4.8.2
+webdriver-manager~=3.8.5

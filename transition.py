@@ -29,11 +29,6 @@ class Text:
             self.text_string += line
         file.close()
 
-    def clean(self):
-        global aksharas
-        cleaned = ''.join([c for c in self.text_string if c in aksharas.keys()])
-        self.cleaned_text_string = cleaned
-
     def insert_in_first_map(self, char):
         if char in self.first_transition_map:
             self.first_transition_map[char] += 1
@@ -84,7 +79,8 @@ class Text:
         sorted_dict = {}
         count_second_order()
         self.count_cv2()
-        self.second_transition_map = dict(sorted(self.second_transition_map.items(), key=lambda x: x[1], reverse=True))
+        self.second_transition_map = dict(
+            sorted(self.second_transition_map.items(), key=lambda x: x[1], reverse=True))
         self.total_second_order = sum(self.second_transition_map.values())
         for pair in self.cv2_count.keys():
             sorted_dict[pair] = []
@@ -110,7 +106,8 @@ class Text:
         count_second_order()
         self.count_cv2()
         self.total_second_order = sum(self.second_transition_map.values())
-        self.second_transition_map = dict(sorted(self.second_transition_map.items(), key=lambda x: x[1], reverse=True))
+        self.second_transition_map = dict(
+            sorted(self.second_transition_map.items(), key=lambda x: x[1], reverse=True))
         workbook = xlsxwriter.Workbook('mapped/second_order_kn.xlsx')
         wk = workbook.add_worksheet('second_order')
         wk.write_row(0, 0, ('CV1', 'CV2', 'CV3', 'Freq', 'Prob', 'CV1 + CV2 | CV3'))
@@ -178,3 +175,6 @@ if __name__ == '__main__':
     text = Text('kn_raw_string')
     text.write_first_order()
     text.write_second_order()
+
+# plotting freq column * freq(cv1)
+# python - plotting freq column per cv1
