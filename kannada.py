@@ -104,10 +104,8 @@ def clean_non_dict_words(file):
                             words.append(line)
                     except:
                         print(f"Error: {line}")
-                print(
-                    f"Processed: {i} / {len(lines)} ({i * 100 / len(lines):.4}%), "
-                    f"Non-words: {len(non_words)} ({len(non_words) * 100 / len(lines):.4}%)",
-                    end='\r')
+                print(f"Processed: {i} / {len(lines)} ({i * 100 / len(lines):.4}%), "
+                      f"Non-words: {len(non_words)} ({len(non_words) * 100 / len(lines):.4}%)", end='\r')
 
         with open('kn_non_dict_words.txt', 'w') as f:
             for word in non_words:
@@ -128,4 +126,5 @@ def clean_non_dict_words(file):
 
 if __name__ == '__main__':
     # print(clean_corpus('kn_words_separated.txt'))
-    clean_non_dict_words('kn_words_separated_cleaned.txt')
+    # clean_non_dict_words('kn_words_separated_cleaned.txt')
+    print(syllabify_kn("ರೊಟ್ಟಿತಿಂಡಿಪಾನೀಯಢೋಕ್ಲಾಮಜ್ಜಿಗೆಹುರಿದಕಾಳುಪಾಪ್"))

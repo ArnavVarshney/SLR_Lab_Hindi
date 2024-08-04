@@ -154,6 +154,7 @@ def freq_analysis(path: str):
     file = open(path + '.txt', 'r', encoding='utf8')
     for line in file:
         for word in line.split(' '):
+            word = word.strip()
             if word in freq_map:
                 freq_map[word] += 1
             else:
@@ -170,11 +171,11 @@ def freq_analysis(path: str):
 
 
 if __name__ == '__main__':
-    freq_analysis('kn_raw_string')
+    freq_analysis('final Kannada corpus text.11.06.23')
 
-    text = Text('kn_raw_string')
-    text.write_first_order()
-    text.write_second_order()
+    # text = Text('kn_raw_string')
+    # text.write_first_order()
+    # text.write_second_order()
 
 # plotting freq column * freq(cv1)
 # python - plotting freq column per cv1
