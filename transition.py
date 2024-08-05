@@ -1,4 +1,5 @@
 import xlsxwriter
+from matplotlib import pyplot as plt
 
 from kannada import syllabify_kn
 
@@ -170,12 +171,24 @@ def freq_analysis(path: str):
     workbook.close()
 
 
-if __name__ == '__main__':
-    freq_analysis('final Kannada corpus text.11.06.23')
+def plot_first_order():
+    count_first_order()
+    chosen_cv1 = input('Enter CV1: ')
+    cv1_transitions = [text.first_transition_map[i] for i in text.first_transition_map.keys() if i[0] == chosen_cv1]
+    cv1_transitions.sort(reverse=True)
+    plt.figure(figsize=(10, 5))
+    plt.plot(cv1_transitions)
+    plt.xlabel('CV1')
+    plt.ylabel('Frequency')
+    plt.title('Frequency of CV1 transitions')
+    plt.show()
 
-    # text = Text('kn_raw_string')
-    # text.write_first_order()
-    # text.write_second_order()
+
+if __name__ == '__main__':
+    # freq_analysis('final Kannada corpus text.11.06.23')
+
+    text = Text('final Kannada corpus text.11.06.23')
+    plot_first_order()  # text.write_first_order()  # text.write_second_order()
 
 # plotting freq column * freq(cv1)
 # python - plotting freq column per cv1
