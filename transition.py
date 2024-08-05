@@ -1,3 +1,4 @@
+import numpy as np
 import xlsxwriter
 from matplotlib import pyplot as plt, font_manager
 
@@ -78,12 +79,13 @@ class Text:
         plt.rcParams['font.family'] = 'Noto Sans Kannada'
         plt.rcParams['font.sans-serif'] = 'Noto Sans Kannada'
 
-        plt.figure(figsize=(30, 15))
+        plt.figure(figsize=(20, 10))
         # plt.plot(x_smooth, y_smooth)
         plt.plot(cv1_transitions_x, cv1_transitions_y)
         plt.xlabel('CV2')
         plt.ylabel('Frequency')
         plt.title('Frequency of CV1 transitions')
+        plt.xticks(ticks=np.arange(0, len(cv1_transitions_x), 3), labels=cv1_transitions_x[::3])
         plt.show()
 
 
