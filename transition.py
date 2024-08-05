@@ -178,7 +178,7 @@ def plot_first_order():
     cv1_transitions.sort(reverse=True)
     plt.figure(figsize=(10, 5))
     plt.plot(cv1_transitions)
-    plt.xlabel('CV1')
+    plt.xlabel('CV2')
     plt.ylabel('Frequency')
     plt.title('Frequency of CV1 transitions')
     plt.show()
