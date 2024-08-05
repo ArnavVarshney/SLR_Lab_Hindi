@@ -17,7 +17,8 @@ def syllabify_kn(text):
             try:
                 lst_chars[-1] = lst_chars[-1] + char
             except IndexError:
-                print(text)
+                pass
+                # print(text)
         else:
             try:
                 if lst_chars[-1][-1] == halant:
