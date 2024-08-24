@@ -26,7 +26,7 @@ class Text:
         return self.cleaned_text_string
 
     def read_text(self, path: str):
-        file = open(path + '.txt', 'r', encoding='utf8')
+        file = open(path + ".txt", "r", encoding="utf8")
         for line in file.readlines():
             self.text_string += line
         file.close()
@@ -50,42 +50,61 @@ class Text:
         count_first_order()
         self.count_cv1()
         self.total_first_order = sum(self.first_transition_map.values())
-        self.first_transition_map = dict(sorted(self.first_transition_map.items(), key=lambda x: x[1], reverse=True))
-        workbook = xlsxwriter.Workbook('mapped/first_order_kn.xlsx')
-        wk = workbook.add_worksheet('first_order')
-        wk.write_row(0, 0, ('CV1', 'CV2', 'Freq', 'Prob', 'CV1 | CV2'))
+        self.first_transition_map = dict(
+            sorted(self.first_transition_map.items(), key=lambda x: x[1], reverse=True)
+        )
+        workbook = xlsxwriter.Workbook("mapped/first_order_kn.xlsx")
+        wk = workbook.add_worksheet("first_order")
+        wk.write_row(0, 0, ("CV1", "CV2", "Freq", "Prob", "CV1 | CV2"))
         row = 1
         for each in self.first_transition_map:
-            wk.write_row(row, 0, (each[0], each[1], self.first_transition_map[each],
-                                  self.first_transition_map[each] / self.total_first_order,
-                                  self.first_transition_map[each] / self.cv1_count[each[0]]))
+            wk.write_row(
+                row,
+                0,
+                (
+                    each[0],
+                    each[1],
+                    self.first_transition_map[each],
+                    self.first_transition_map[each] / self.total_first_order,
+                    self.first_transition_map[each] / self.cv1_count[each[0]],
+                ),
+            )
             row += 1
         workbook.close()
 
     def plot_first_order(self):
         count_first_order()
-        chosen_cv1 = input('Enter the CV1 to plot: ')
-        self.first_transition_map = dict(sorted(self.first_transition_map.items(), key=lambda x: x[1], reverse=True))
-        cv1_transitions_y = [text.first_transition_map[i] for i in text.first_transition_map.keys() if
-                             i[0] == chosen_cv1]
-        cv1_transitions_x = [i[1] for i in text.first_transition_map.keys() if i[0] == chosen_cv1]
+        chosen_cv1 = input("Enter the CV1 to plot: ")
+        self.first_transition_map = dict(
+            sorted(self.first_transition_map.items(), key=lambda x: x[1], reverse=True)
+        )
+        cv1_transitions_y = [
+            text.first_transition_map[i]
+            for i in text.first_transition_map.keys()
+            if i[0] == chosen_cv1
+        ]
+        cv1_transitions_x = [
+            i[1] for i in text.first_transition_map.keys() if i[0] == chosen_cv1
+        ]
 
         # # Smoothing the data
         # x_smooth = np.linspace(0, len(cv1_transitions_x) - 1, 300)
         # y_smooth = make_interp_spline(range(len(cv1_transitions_x)), cv1_transitions_y)(x_smooth)
 
-        font_path = 'NotoSansKannada.ttf'
+        font_path = "NotoSansKannada.ttf"
         font_manager.fontManager.addfont(font_path)
-        plt.rcParams['font.family'] = 'Noto Sans Kannada'
-        plt.rcParams['font.sans-serif'] = 'Noto Sans Kannada'
+        plt.rcParams["font.family"] = "Noto Sans Kannada"
+        plt.rcParams["font.sans-serif"] = "Noto Sans Kannada"
 
         plt.figure(figsize=(20, 10))
         # plt.plot(x_smooth, y_smooth)
         plt.plot(cv1_transitions_x, cv1_transitions_y)
-        plt.xlabel('CV2')
-        plt.ylabel('Frequency')
-        plt.title('Frequency of CV1 transitions')
-        plt.xticks(ticks=np.arange(0, len(cv1_transitions_x), 3), labels=cv1_transitions_x[::3])
+        plt.xlabel("CV2")
+        plt.ylabel("Frequency")
+        plt.title("Frequency of CV1 transitions")
+        plt.xticks(
+            ticks=np.arange(0, len(cv1_transitions_x), 3), labels=cv1_transitions_x[::3]
+        )
         plt.show()
 
 
@@ -110,7 +129,9 @@ def sort_second_order(self):
     sorted_dict = {}
     count_second_order()
     self.count_cv2()
-    self.second_transition_map = dict(sorted(self.second_transition_map.items(), key=lambda x: x[1], reverse=True))
+    self.second_transition_map = dict(
+        sorted(self.second_transition_map.items(), key=lambda x: x[1], reverse=True)
+    )
     self.total_second_order = sum(self.second_transition_map.values())
     for pair in self.cv2_count.keys():
         sorted_dict[pair] = []
@@ -118,17 +139,27 @@ def sort_second_order(self):
             if pair == (each[0], each[1]):
                 if each not in sorted_dict[pair]:
                     sorted_dict[pair].append(each)
-    workbook = xlsxwriter.Workbook('mapped/second_order_filtered_kn.xlsx')
-    wk = workbook.add_worksheet('second_order')
-    wk.write_row(0, 0, ('CV1', 'CV2', 'CV3', 'Freq', 'Prob', 'CV1 + CV2 | CV3'))
+    workbook = xlsxwriter.Workbook("mapped/second_order_filtered_kn.xlsx")
+    wk = workbook.add_worksheet("second_order")
+    wk.write_row(0, 0, ("CV1", "CV2", "CV3", "Freq", "Prob", "CV1 + CV2 | CV3"))
     row = 1
     for key in sorted_dict.keys():
         ls = sorted_dict[key]
         if 3 >= len(ls) > 1:
             for each in ls:
-                wk.write_row(row, 0, (each[0], each[1], each[2], self.second_transition_map[each],
-                                      self.second_transition_map[each] / self.total_second_order,
-                                      self.second_transition_map[each] / self.cv2_count[(each[0], each[1])]))
+                wk.write_row(
+                    row,
+                    0,
+                    (
+                        each[0],
+                        each[1],
+                        each[2],
+                        self.second_transition_map[each],
+                        self.second_transition_map[each] / self.total_second_order,
+                        self.second_transition_map[each]
+                        / self.cv2_count[(each[0], each[1])],
+                    ),
+                )
                 row += 1
     workbook.close()
 
@@ -137,15 +168,26 @@ def write_second_order(self):
     count_second_order()
     self.count_cv2()
     self.total_second_order = sum(self.second_transition_map.values())
-    self.second_transition_map = dict(sorted(self.second_transition_map.items(), key=lambda x: x[1], reverse=True))
-    workbook = xlsxwriter.Workbook('mapped/second_order_kn.xlsx')
-    wk = workbook.add_worksheet('second_order')
-    wk.write_row(0, 0, ('CV1', 'CV2', 'CV3', 'Freq', 'Prob', 'CV1 + CV2 | CV3'))
+    self.second_transition_map = dict(
+        sorted(self.second_transition_map.items(), key=lambda x: x[1], reverse=True)
+    )
+    workbook = xlsxwriter.Workbook("mapped/second_order_kn.xlsx")
+    wk = workbook.add_worksheet("second_order")
+    wk.write_row(0, 0, ("CV1", "CV2", "CV3", "Freq", "Prob", "CV1 + CV2 | CV3"))
     row = 1
     for each in self.second_transition_map:
-        wk.write_row(row, 0, (each[0], each[1], each[2], self.second_transition_map[each],
-                              self.second_transition_map[each] / self.total_second_order,
-                              self.second_transition_map[each] / self.cv2_count[(each[0], each[1])]))
+        wk.write_row(
+            row,
+            0,
+            (
+                each[0],
+                each[1],
+                each[2],
+                self.second_transition_map[each],
+                self.second_transition_map[each] / self.total_second_order,
+                self.second_transition_map[each] / self.cv2_count[(each[0], each[1])],
+            ),
+        )
         row += 1
     workbook.close()
 
@@ -181,18 +223,18 @@ def count_second_order():
 
 def freq_analysis(path: str):
     freq_map = {}
-    file = open(path + '.txt', 'r', encoding='utf8')
+    file = open(path + ".txt", "r", encoding="utf8")
     for line in file:
-        for word in line.split(' '):
+        for word in line.split(" "):
             word = word.strip()
             if word in freq_map:
                 freq_map[word] += 1
             else:
                 freq_map[word] = 1
     file.close()
-    workbook = xlsxwriter.Workbook('mapped/freq_analysis_kn.xlsx')
-    wk = workbook.add_worksheet('freq_analysis')
-    wk.write_row(0, 0, ('Word', 'Frequency'))
+    workbook = xlsxwriter.Workbook("mapped/freq_analysis_kn.xlsx")
+    wk = workbook.add_worksheet("freq_analysis")
+    wk.write_row(0, 0, ("Word", "Frequency"))
     row = 1
     for each in freq_map:
         wk.write_row(row, 0, (each, freq_map[each]))
