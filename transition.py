@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import xlsxwriter
 from matplotlib import pyplot as plt, font_manager
 
@@ -28,7 +29,7 @@ class Text:
     def read_text(self, path: str):
         file = open(path + ".txt", "r", encoding="utf8")
         for line in file.readlines():
-            self.text_string += line
+            self.text_string += line + ""
         file.close()
 
     def insert_in_first_map(self, char):
@@ -50,9 +51,7 @@ class Text:
         count_first_order()
         self.count_cv1()
         self.total_first_order = sum(self.first_transition_map.values())
-        self.first_transition_map = dict(
-            sorted(self.first_transition_map.items(), key=lambda x: x[1], reverse=True)
-        )
+        self.first_transition_map = dict(sorted(self.first_transition_map.items(), key=lambda x: x[1], reverse=True))
         workbook = xlsxwriter.Workbook("mapped/first_order_kn.xlsx")
         wk = workbook.add_worksheet("first_order")
         wk.write_row(0, 0, ("CV1", "CV2", "Freq", "Prob", "CV1 | CV2"))
@@ -75,17 +74,11 @@ class Text:
     def plot_first_order(self):
         count_first_order()
         chosen_cv1 = input("Enter the CV1 to plot: ")
-        self.first_transition_map = dict(
-            sorted(self.first_transition_map.items(), key=lambda x: x[1], reverse=True)
-        )
+        self.first_transition_map = dict(sorted(self.first_transition_map.items(), key=lambda x: x[1], reverse=True))
         cv1_transitions_y = [
-            text.first_transition_map[i]
-            for i in text.first_transition_map.keys()
-            if i[0] == chosen_cv1
+            text.first_transition_map[i] for i in text.first_transition_map.keys() if i[0] == chosen_cv1
         ]
-        cv1_transitions_x = [
-            i[1] for i in text.first_transition_map.keys() if i[0] == chosen_cv1
-        ]
+        cv1_transitions_x = [i[1] for i in text.first_transition_map.keys() if i[0] == chosen_cv1]
 
         # # Smoothing the data
         # x_smooth = np.linspace(0, len(cv1_transitions_x) - 1, 300)
@@ -102,9 +95,7 @@ class Text:
         plt.xlabel("CV2")
         plt.ylabel("Frequency")
         plt.title("Frequency of CV1 transitions")
-        plt.xticks(
-            ticks=np.arange(0, len(cv1_transitions_x), 3), labels=cv1_transitions_x[::3]
-        )
+        plt.xticks(ticks=np.arange(0, len(cv1_transitions_x), 3), labels=cv1_transitions_x[::3])
         plt.show()
 
 
@@ -129,9 +120,7 @@ def sort_second_order(self):
     sorted_dict = {}
     count_second_order()
     self.count_cv2()
-    self.second_transition_map = dict(
-        sorted(self.second_transition_map.items(), key=lambda x: x[1], reverse=True)
-    )
+    self.second_transition_map = dict(sorted(self.second_transition_map.items(), key=lambda x: x[1], reverse=True))
     self.total_second_order = sum(self.second_transition_map.values())
     for pair in self.cv2_count.keys():
         sorted_dict[pair] = []
@@ -156,8 +145,7 @@ def sort_second_order(self):
                         each[2],
                         self.second_transition_map[each],
                         self.second_transition_map[each] / self.total_second_order,
-                        self.second_transition_map[each]
-                        / self.cv2_count[(each[0], each[1])],
+                        self.second_transition_map[each] / self.cv2_count[(each[0], each[1])],
                     ),
                 )
                 row += 1
@@ -168,9 +156,7 @@ def write_second_order(self):
     count_second_order()
     self.count_cv2()
     self.total_second_order = sum(self.second_transition_map.values())
-    self.second_transition_map = dict(
-        sorted(self.second_transition_map.items(), key=lambda x: x[1], reverse=True)
-    )
+    self.second_transition_map = dict(sorted(self.second_transition_map.items(), key=lambda x: x[1], reverse=True))
     workbook = xlsxwriter.Workbook("mapped/second_order_kn.xlsx")
     wk = workbook.add_worksheet("second_order")
     wk.write_row(0, 0, ("CV1", "CV2", "CV3", "Freq", "Prob", "CV1 + CV2 | CV3"))
@@ -242,11 +228,45 @@ def freq_analysis(path: str):
     workbook.close()
 
 
-if __name__ == '__main__':
+def remove_tangled_words():
+    tangled_words = pd.read_csv("kn_sylb_len_wrd_tangle_fixed_AV.csv")
+
+    start = len(text.cleaned_text_string)
+
+    substitutions = {}
+    for i in range(len(tangled_words)):
+        word = str(tangled_words["Word"][i]).strip()
+        substitute = str(tangled_words["Substitute"][i]).strip()
+        if word != substitute:
+            if substitute.lower() == 'delete':
+                substitutions[word] = ""
+            else:
+                substitutions[word] = substitute
+
+    new_cleaned_string = ''
+    corpus = text.cleaned_text_string.split(" ")
+    for word in corpus:
+        if word in substitutions:
+            new_cleaned_string += substitutions[word] + " "
+        else:
+            new_cleaned_string += word + " "
+
+    text.cleaned_text_string = new_cleaned_string
+
+    with open("final Kannada corpus - cleaned.txt", "w", encoding="utf8") as file:
+        file.write(text.cleaned_text_string)
+
+    end = len(text.cleaned_text_string)
+    print(f"Removed {start - end} characters")
+
+
+if __name__ == "__main__":
     # freq_analysis('final Kannada corpus text.11.06.23')
 
-    text = Text('final Kannada corpus text.11.06.23')
-    text.plot_first_order()  # text.write_first_order()  # text.write_second_order()
+    text = Text("final Kannada corpus - uncleaned")
+    remove_tangled_words()
+
+    # text.plot_first_order()  # text.write_first_order()  # text.write_second_order()
 
 # plotting freq column * freq(cv1)
 # python - plotting freq column per cv1
